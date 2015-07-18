@@ -83,7 +83,7 @@ define backup::account (
 
   unless $ensure == 'absent' {
     file{$home:
-      user  => $title,
+      owner => $title,
       group => $group,
       mode  => $mode,
     }
