@@ -36,14 +36,55 @@
 # Copyright 2015 Tim Meusel, unless otherwise noted.
 #
 define backup::account (
-  String[3]                           $user       = $title,
-  Boolean                             $compression  = true,
-  Boolean                             $dedup        = false,
-  Enum['nfs', 'iscsi', 'nbd', 'file'] $access_type  = 'file',
-  String[12]                          $password,
-  String[2]                           $quota,
-  Array                               $allow_ipv4,
-  Array                               $allow_ipv6,
-  Array                               $deny_ipv4.
-  Array                               $deny_ipv6,
-) { }
+# preparation for puppet 4
+#  String[3] $homepath,
+#  Hash $user_settings,
+#  Hash $zfs_settings,
+#  Array $allow_ipv4,
+#  Array $allow_ipv6,
+#  Array $deny_ipv4.
+#  Array $deny_ipv6,
+#  Enum['present', 'absent'] $ensure = 'present',
+#  String[3] $zpool = 'zroot', #default on FreeBSD
+#  String[4] $mode = '0770',
+#  String[1] $group = $title,
+  $homepath,
+  $user_settings,
+  $zfs_settings,
+  $allow_ipv4,
+  $allow_ipv6,
+  $deny_ipv4,
+  $deny_ipv6,
+  $ensure = 'present',
+  $zpool = 'zroot', #default on FreeBSD
+  $mode = '0770',
+  $group = $title,
+) {
+  $home = "${homepath}/${title}"
+
+  unless defined(User[$title]) {
+    unless(has_key($user_settings, 'ensure')){
+      $user_params = {
+        "${title}" => merge({'ensure' => $ensure}, $user_settings)
+      }
+      create_resources(user, $user_params)
+    }
+  }
+
+  $zfs_settings = merge({'mountpoint' => $home}, $zfs_settings)
+  unless(has_key($zfs_settings, 'ensure')){
+    $zfs_name = "${zpool}/${title}"
+    $zfs_params = {
+      "${zfs_name}" => merge({'ensure' => $ensure}, $zfs_settings)
+    }
+  }
+  create_resources(zfs, $zfs_params)
+
+  unless $ensure == 'absent' {
+    file{$home:
+      user  => $title,
+      group => $group,
+      mode  => $mode,
+    }
+  }
+}

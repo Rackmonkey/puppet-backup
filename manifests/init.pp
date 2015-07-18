@@ -37,5 +37,8 @@
 #
 class backup {
 
+  unless $::kernel == 'FreeBSD' {
+    fail("This module is only tested on FreeBSD, but you're running ${::kernel}")
+  }
 
 }
