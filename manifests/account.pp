@@ -48,35 +48,35 @@ define backup::account (
 #  String[3] $zpool = 'zroot', #default on FreeBSD
 #  String[4] $mode = '0770',
 #  String[1] $group = $title,
-  $homepath,
-  $user_settings,
-  $zfs_settings,
-  $allow_ipv4,
-  $allow_ipv6,
-  $deny_ipv4,
-  $deny_ipv6,
-  $ensure = 'present',
-  $zpool = 'zroot', #default on FreeBSD
-  $mode = '0770',
-  $group = $title,
+  $homepath       = '',
+  $user_settings  = '',
+  $zfs_settings   = '',
+  $allow_ipv4     = '',
+  $allow_ipv6     = '',
+  $deny_ipv4      = '',
+  $deny_ipv6      = '',
+  $ensure         = 'present',
+  $zpool          = 'zroot', #default on FreeBSD
+  $mode           = '0770',
+  $group          = $title,
 ) {
   $home = "${homepath}/${title}"
 
   unless defined(User[$title]) {
-    $user_settings = merge({'home' => $home}, $user_settings)
+    $user_settings2 = merge({'home' => $home}, $user_settings)
     unless(has_key($user_settings, 'ensure')){
       $user_params = {
-        "${title}" => merge({'ensure' => $ensure}, $user_settings)
+        "${title}" => merge({'ensure' => $ensure}, $user_settings2)
       }
       create_resources(user, $user_params)
     }
   }
 
-  $zfs_settings = merge({'mountpoint' => $home}, $zfs_settings)
+  $zfs_settings2 = merge({'mountpoint' => $home}, $zfs_settings)
   unless(has_key($zfs_settings, 'ensure')){
     $zfs_name = "${zpool}/${title}"
     $zfs_params = {
-      "${zfs_name}" => merge({'ensure' => $ensure}, $zfs_settings)
+      "${zfs_name}" => merge({'ensure' => $ensure}, $zfs_settings2)
     }
   }
   create_resources(zfs, $zfs_params)
