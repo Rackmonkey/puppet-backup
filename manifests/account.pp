@@ -63,6 +63,7 @@ define backup::account (
   $home = "${homepath}/${title}"
 
   unless defined(User[$title]) {
+    $user_settings = merge({'home' => $home}, $user_settings)
     unless(has_key($user_settings, 'ensure')){
       $user_params = {
         "${title}" => merge({'ensure' => $ensure}, $user_settings)
