@@ -51,6 +51,7 @@ define backup::account (
   $homepath       = '',
   $user_settings  = '',
   $zfs_settings   = '',
+  $iscsi_settings = '',
   $allow_ipv4     = '',
   $allow_ipv6     = '',
   $deny_ipv4      = '',
@@ -59,27 +60,43 @@ define backup::account (
   $zpool          = 'zroot', #default on FreeBSD
   $mode           = '0770',
   $group          = $title,
+  $type           = 'iscsi',
 ) {
   $home = "${homepath}/${title}"
 
-  unless defined(User[$title]) {
-    $user_settings2 = merge({'home' => $home}, $user_settings)
-    unless(has_key($user_settings, 'ensure')){
-      $user_params = {
-        "${title}" => merge({'ensure' => $ensure}, $user_settings2)
-      }
-      create_resources(user, $user_params)
+  if $type == 'iscsi' {
+    $zfs_settings2 = $zfs_settings
+    $iqn = join(reverse(split($::fqdn, '\.')), '.')
+    concat::fragment{"auth-group-${title}":
+      target  => '/etc/ctl.conf',
+      content => "auth-group ag-${title} { chap ${title} ${user_settings['password']}}\n",
     }
+    concat::fragment{"target-${title}":
+      target  => '/etc/ctl.conf',
+      content => "target iqn.2012-06.${iqn}:${title} {\n  auth-group ag-${title} \n  portal-group ${iscsi_settings['pg']} \n  lun 0{\n    path /dev/zvol/${zpool}/${title} \n    backend block\n  }\n}",
+    }
+  } else {
+    $zfs_settings2 = merge({'mountpoint' => $home}, $zfs_settings)
   }
 
-  $zfs_settings2 = merge({'mountpoint' => $home}, $zfs_settings)
-  unless(has_key($zfs_settings, 'ensure')){
-    $zfs_name = "${zpool}/${title}"
-    $zfs_params = {
-      "${zfs_name}" => merge({'ensure' => $ensure}, $zfs_settings2)
+  unless defined(User[$title]) {
+    $user_settings2 = merge({'home' => $home}, $user_settings)
+    if (has_key($user_settings, 'ensure')){
+      $user_settings3 = $user_settings2
+    } else {
+      $user_settings3 = merge({'ensure' => $ensure}, $user_settings2)
     }
+    $user_params = {"${title}" => $user_settings3}
+    create_resources(user, $user_params)
   }
-  create_resources(zfs, $zfs_params)
+
+  if (has_key($zfs_settings, 'ensure')){
+    $zfs_settings3 = $zfs_settings2
+  } else {
+    $zfs_settings3 = merge({'ensure' => $ensure}, $zfs_settings2)
+  }
+  $zfs_settings4 = { "${zpool}/${title}" => $zfs_settings3}
+  create_resources(zfs, $zfs_settings4)
 
   unless $ensure == 'absent' {
     file{$home:

@@ -40,5 +40,24 @@ class backup {
   unless $::kernel == 'FreeBSD' {
     fail("This module is only tested on FreeBSD, but you're running ${::kernel}")
   }
-
+  concat{'/etc/ctl.conf':
+    ensure  => 'present',
+    mode    => '0640',
+    notify  => Service['ctld'],
+  }
+  each(split($::interfaces, ',')) |$interface| {
+    unless $interface == 'lo0' {
+      $ip = $address = inline_template("<%= scope.lookupvar('::ipaddress_${interface}') -%>")
+      concat::fragment{"portal-group-${interface}":
+        target  => '/etc/ctl.conf',
+        content => "portal-group pg-${interface} {\n  discovery-auth-group no-authentication\n  listen ${ip}\n}\n",
+      }
+    }
+  }
+  # enable ctld, needed for iscsi targets
+  service{'ctld':
+    ensure  => 'running',
+    enable  => true,
+    require => Concat['/etc/ctl.conf'],
+  }
 }
