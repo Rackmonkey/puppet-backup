@@ -69,7 +69,7 @@ define backup::account (
     $iqn = join(reverse(split($::fqdn, '\.')), '.')
     concat::fragment{"auth-group-${title}":
       target  => '/etc/ctl.conf',
-      content => "auth-group ag-${title} { chap ${title} ${user_settings['password']}}\n",
+      content => "auth-group ag-${title} { chap ${title} ${user_settings['password']} }\n",
     }
     concat::fragment{"target-${title}":
       target  => '/etc/ctl.conf',
