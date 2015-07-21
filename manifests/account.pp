@@ -105,4 +105,14 @@ define backup::account (
       mode  => $mode,
     }
   }
+  case $type {
+    'iscsi':  { if $backup::allow_iscsi {include backup::iscsi} else {fail("your provided type ${type} isn't allowed on this server")}}
+    'ftp' :   { if $backup::allow_ftp   {include backup::ftp} else {fail("your provided type ${type} isn't allowed on this server")} }
+    'sftp':   { if $backup::allow_sftp  {include backup::ftp} else {fail("your provided type ${type} isn't allowed on this server")}}
+    'ftps':   { if $backup::allow_ftps  {include backup::ftps} else {fail("your provided type ${type} isn't allowed on this server")}}
+    'ssh':    { if $backup::allow_ssh   {include backup::ssh} else {fail("your provided type ${type} isn't allowed on this server")}}
+    'nbd':    { if $backup::allow_nbd   {include backup::nbd} else {fail("your provided type ${type} isn't allowed on this server")}}
+    'nfs':    { if $backup::allow_nfs   {include backup::nfs} else {fail("your provided type ${type} isn't allowed on this server")}}
+    default:  { fail("your provided type ${type} isn't available in this module")}
+  }
 }

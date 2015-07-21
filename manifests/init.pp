@@ -35,7 +35,15 @@
 #
 # Copyright 2015 Your name here, unless otherwise noted.
 #
-class backup {
+class backup (
+  $allow_ftp    = true,
+  $allow_sftp   = true,
+  $allow_ftps   = true,
+  $allow_ssh    = true,
+  $allow_iscsi  = true,
+  $allow_nbd    = true,
+  $allow_nfs    = true,
+){
 
   unless $::kernel == 'FreeBSD' {
     fail("This module is only tested on FreeBSD, but you're running ${::kernel}")
