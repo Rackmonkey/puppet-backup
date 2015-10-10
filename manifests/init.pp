@@ -23,17 +23,31 @@
 #
 # === Examples
 #
-#  class { 'backup':
-#    servers => [ 'pool.ntp.org', 'ntp.local.company.com' ],
+#  include ::backup
+#  backup::account{'user1':
+#    type            => 'ssh',
+#    zfs_settings    => {
+#      compression => 'on',
+#      quota       => '100G',
+#    },  
+#    # mkpasswd -m sha-512 on debian
+#    user_settings   => {
+#      shell     => '/usr/sbin/nologin',
+#      password  => '$6$tghjkiutrf$xcferutoiunbztrcexctvjzubkilunkzjthrxextcrtbzu',
+#    },  
+#    ssh_key => 'ssh-ed25519 w4ztiuterexkcrvrthgjfedvtbjkzukiiujvhct',
 #  }
 #
 # === Authors
+
 #
-# Author Name <author@domain.com>
+# === Authors
+#
+# Tim Meusel <tim@bastelfreak.de>
 #
 # === Copyright
 #
-# Copyright 2015 Your name here, unless otherwise noted.
+# Copyright 2015 Tim Meusel, Kalt Medien UG
 #
 class backup (
   $allow_ftp    = true,
@@ -67,5 +81,39 @@ class backup (
     ensure  => 'running',
     enable  => true,
     require => Concat['/etc/ctl.conf'],
+  }
+  group{'customers':
+    ensure  => present,
+  }
+  if $allow_sftp {
+    # todo: implement this dynamically and don't hardcode the group
+    $group = 'group customers'
+    Sshd_config{
+      condition => $group,
+      require   => Sshd_config_match[$group],
+    }
+    sshd_config_match {$group:
+      ensure => present,
+    }
+    sshd_config{'ChrootDirectory':
+      key   =>  'ChrootDirectory',
+      value => '/customers/%u',
+    }
+    sshd_config{'X11Forwarding':
+      key   => 'X11Forwarding',
+      value => 'no',
+    }
+    sshd_config{'AllowTcpForwarding':
+      key   => 'AllowTcpForwarding',
+      value => 'no',
+    }
+    sshd_config{'ForceCommand':
+      key   => 'ForceCommand',
+      value => 'internal-sftp',
+    }
+    sshd_config{'AuthorizedKeysFile':
+      key   => 'AuthorizedKeysFile',
+      value => '/etc/ssh/login-keys/%u.keys',
+    }
   }
 }

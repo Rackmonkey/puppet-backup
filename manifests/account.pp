@@ -48,7 +48,7 @@ define backup::account (
 #  String[3] $zpool = 'zroot', #default on FreeBSD
 #  String[4] $mode = '0770',
 #  String[1] $group = $title,
-  $homepath       = '',
+  $homepath       = '/customers',
   $user_settings  = '',
   $zfs_settings   = '',
   $iscsi_settings = '',
@@ -58,9 +58,10 @@ define backup::account (
   $deny_ipv6      = '',
   $ensure         = 'present',
   $zpool          = 'zroot', #default on FreeBSD
-  $mode           = '0770',
+  $mode           = '0750',
   $group          = $title,
   $type           = 'iscsi',
+  $ssh_key        = undef,
 ) {
   $home = "${homepath}/${title}"
 
@@ -80,7 +81,7 @@ define backup::account (
   }
 
   unless defined(User[$title]) {
-    $user_settings2 = merge({'home' => $home}, $user_settings)
+    $user_settings2 = merge({'home' => $home, 'groups' => 'customers', require => Group['customers'], purge_ssh_keys => true}, $user_settings)
     if (has_key($user_settings, 'ensure')){
       $user_settings3 = $user_settings2
     } else {
@@ -100,9 +101,20 @@ define backup::account (
 
   unless $ensure == 'absent' {
     file{$home:
-      owner => $title,
+      owner => 'root',
       group => $group,
       mode  => $mode,
+    }
+  }
+  if $type != ['iscsi', 'nbd'] {
+    if $ssh_key {
+      $ssh_key_array = split($ssh_key, ' ')
+      ssh_authorized_key{"ssh_authorized_key-${title}":
+        user    => $title,
+        type    => $ssh_key_array[0],
+        key     => $ssh_key_array[1],
+        target  => "/etc/ssh/login-keys/${title}.pub",
+      }
     }
   }
   case $type {
