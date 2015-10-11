@@ -29,12 +29,12 @@
 #    zfs_settings    => {
 #      compression => 'on',
 #      quota       => '100G',
-#    },  
+#    },
 #    # mkpasswd -m sha-512 on debian
 #    user_settings   => {
 #      shell     => '/usr/sbin/nologin',
 #      password  => '$6$tghjkiutrf$xcferutoiunbztrcexctvjzubkilunkzjthrxextcrtbzu',
-#    },  
+#    },
 #    ssh_key => 'ssh-ed25519 w4ztiuterexkcrvrthgjfedvtbjkzukiiujvhct',
 #  }
 #
@@ -62,28 +62,30 @@ class backup (
   unless $::kernel == 'FreeBSD' {
     fail("This module is only tested on FreeBSD, but you're running ${::kernel}")
   }
-  concat{'/etc/ctl.conf':
-    ensure  => 'present',
-    mode    => '0640',
-    notify  => Service['ctld'],
-  }
-  each(split($::interfaces, ',')) |$interface| {
-    unless $interface == 'lo0' {
-      $ip = $address = inline_template("<%= scope.lookupvar('::ipaddress_${interface}') -%>")
-      concat::fragment{"portal-group-${interface}":
-        target  => '/etc/ctl.conf',
-        content => "portal-group pg-${interface} {\n  discovery-auth-group no-authentication\n  listen ${ip}\n}\n",
-      }
-    }
-  }
-  # enable ctld, needed for iscsi targets
-  service{'ctld':
-    ensure  => 'running',
-    enable  => true,
-    require => Concat['/etc/ctl.conf'],
-  }
   group{'customers':
     ensure  => present,
+  }
+  if $allow_iscsi {
+    concat{'/etc/ctl.conf':
+      ensure  => 'present',
+      mode    => '0640',
+      notify  => Service['ctld'],
+    }
+    each(split($::interfaces, ',')) |$interface| {
+      unless $interface == 'lo0' {
+        $ip = $address = inline_template("<%= scope.lookupvar('::ipaddress_${interface}') -%>")
+        concat::fragment{"portal-group-${interface}":
+          target  => '/etc/ctl.conf',
+          content => "portal-group pg-${interface} {\n  discovery-auth-group no-authentication\n  listen ${ip}\n}\n",
+        }
+      }
+    }
+    # enable ctld, needed for iscsi targets
+    service{'ctld':
+      ensure  => 'running',
+      enable  => true,
+      require => Concat['/etc/ctl.conf'],
+    }
   }
   if $allow_sftp {
     # todo: implement this dynamically and don't hardcode the group
@@ -91,6 +93,7 @@ class backup (
     Sshd_config{
       condition => $group,
       require   => Sshd_config_match[$group],
+      notify    => Service['sshd'],
     }
     sshd_config_match {$group:
       ensure => present,
@@ -113,7 +116,7 @@ class backup (
     }
     sshd_config{'AuthorizedKeysFile':
       key   => 'AuthorizedKeysFile',
-      value => '/etc/ssh/login-keys/%u.keys',
+      value => '%h/%u/.ssh/authorized_keys',
     }
   }
 }

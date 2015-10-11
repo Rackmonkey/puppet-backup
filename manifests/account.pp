@@ -108,12 +108,13 @@ define backup::account (
   }
   if $type != ['iscsi', 'nbd'] {
     if $ssh_key {
+      # we need to place the key in the subdir and not in $home because the user hasn't write access there
       $ssh_key_array = split($ssh_key, ' ')
       ssh_authorized_key{"ssh_authorized_key-${title}":
         user    => $title,
         type    => $ssh_key_array[0],
         key     => $ssh_key_array[1],
-        target  => "/etc/ssh/login-keys/${title}.pub",
+        target  => "/customers/${title}/${title}/.ssh/authorized_keys",
       }
     }
   }
