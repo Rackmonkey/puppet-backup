@@ -1,32 +1,34 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-puppetversion = ENV['PUPPET_VERSION'] || '~> 3.8.0'
-gem 'puppet', puppetversion, :require => false
+group :test do
+  gem "rake"
+  gem "puppet", ENV['PUPPET_GEM_VERSION'] || '~> 3.8.0'
+  gem "rspec", '< 3.2.0'
+  gem "rspec-puppet", :git => 'https://github.com/rodjek/rspec-puppet.git'
+  gem "puppetlabs_spec_helper"
+  gem "metadata-json-lint"
+  gem "rspec-puppet-facts"
+  gem 'rubocop', '0.33.0'
+  gem 'simplecov'
+  gem 'simplecov-console'
 
-gem 'beaker', :git => 'https://github.com/puppetlabs/beaker.git', :branch => 'master'
-gem 'beaker-rspec', :git => 'https://github.com/puppetlabs/beaker-rspec.git', :branch => 'master'
-gem 'metadata-json-lint', :git => 'https://github.com/nibalizer/metadata-json-lint.git', :branch => 'master'
-gem 'rspec-puppet', '2.2.0'
+  gem "puppet-lint-absolute_classname-check"
+  gem "puppet-lint-leading_zero-check"
+  gem "puppet-lint-trailing_comma-check"
+  gem "puppet-lint-version_comparison-check"
+  gem "puppet-lint-classes_and_types_beginning_with_digits-check"
+  gem "puppet-lint-unquoted_string-check"
+end
 
-gem 'pry'
-gem 'docker-api', '~> 1.0'
-gem 'rubysl-securerandom'
-gem 'ci_reporter_rspec'
-gem 'rspec', '~> 3.0'
-gem 'rake'
-gem 'puppet-doc-lint'
-gem 'puppet-lint'
-gem 'puppetlabs_spec_helper'
-gem 'puppet-syntax'
-gem 'rspec-puppet-facts'
-gem 'webmock'
+group :development do
+  gem "travis"
+  gem "travis-lint"
+  gem "puppet-blacksmith"
+  gem "guard-rake"
+end
 
-# Extra Puppet-lint gems
-gem 'puppet-lint-appends-check', :require => false
-gem 'puppet-lint-version_comparison-check', :require => false
-gem 'puppet-lint-unquoted_string-check', :require => false
-gem 'puppet-lint-undef_in_function-check', :require => false
-gem 'puppet-lint-trailing_comma-check', :require => false
-gem 'puppet-lint-leading_zero-check', :require => false
-gem 'puppet-lint-file_ensure-check', :require => false
-gem 'puppet-lint-empty_string-check', :require => false
+group :system_tests do
+  gem "beaker"
+  gem "beaker-rspec"
+  gem "beaker-puppet_install_helper"
+end
