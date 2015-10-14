@@ -73,7 +73,7 @@ class backup (
     }
     each(split($::interfaces, ',')) |$interface| {
       unless $interface == 'lo0' {
-        $ip = $address = inline_template("<%= scope.lookupvar('::ipaddress_${interface}') -%>")
+        $ip = inline_template("<%= scope.lookupvar('::ipaddress_${interface}') -%>")
         concat::fragment{"portal-group-${interface}":
           target  => '/etc/ctl.conf',
           content => "portal-group pg-${interface} {\n  discovery-auth-group no-authentication\n  listen ${ip}\n}\n",
