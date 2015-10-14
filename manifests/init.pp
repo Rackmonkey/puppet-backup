@@ -39,9 +39,6 @@
 #  }
 #
 # === Authors
-
-#
-# === Authors
 #
 # Tim Meusel <tim@bastelfreak.de>
 #
@@ -50,14 +47,14 @@
 # Copyright 2015 Tim Meusel, Kalt Medien UG
 #
 class backup (
-  $allow_ftp    = true,
-  $allow_sftp   = true,
-  $allow_ftps   = true,
-  $allow_ssh    = true,
-  $allow_iscsi  = true,
-  $allow_nbd    = true,
-  $allow_nfs    = true,
-){
+  $allow_ftp    = backup::params::allow_ftp,
+  $allow_sftp   = backup::params::allow_sftp,
+  $allow_ftps   = backup::params::allow_ftps,
+  $allow_ssh    = backup::params::allow_ssh,
+  $allow_iscsi  = backup::params::allow_iscsi,
+  $allow_nbd    = backup::params::allow_nbd,
+  $allow_nfs    = backup::params::allow_nfs,
+) inherits backup::params {
 
   unless $::kernel == 'FreeBSD' {
     fail("This module is only tested on FreeBSD, but you're running ${::kernel}")
@@ -73,7 +70,7 @@ class backup (
     }
     each(split($::interfaces, ',')) |$interface| {
       unless $interface == 'lo0' {
-        $ip = inline_template("<%= scope.lookupvar('::ipaddress_${interface}') -%>")
+        $ip = getvar("::ipaddress_${interface}")
         concat::fragment{"portal-group-${interface}":
           target  => '/etc/ctl.conf',
           content => "portal-group pg-${interface} {\n  discovery-auth-group no-authentication\n  listen ${ip}\n}\n",
