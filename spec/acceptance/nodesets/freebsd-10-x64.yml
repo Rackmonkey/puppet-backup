@@ -1,0 +1,7 @@
+HOSTS:
+  freebsd-10.2:
+    platform: el-7-x86_64
+    image: freebsd/FreeBSD-10.2-STABLE
+    hypervisor: vagrant
+CONFIG:
+  type: foss
