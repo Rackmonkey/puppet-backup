@@ -19,10 +19,10 @@ end
 RuboCop::RakeTask.new
 
 exclude_paths = [
-  "bundle/**/*",
-  "pkg/**/*",
-  "vendor/**/*",
-  "spec/**/*",
+  'bundle/**/*',
+  'pkg/**/*',
+  'vendor/**/*',
+  'spec/**/*',
 ]
 
 Rake::Task[:lint].clear
@@ -40,17 +40,17 @@ end
 
 PuppetSyntax.exclude_paths = exclude_paths
 
-desc "Run acceptance tests"
+desc 'Run acceptance tests'
 RSpec::Core::RakeTask.new(:acceptance) do |t|
   t.pattern = 'spec/acceptance'
 end
 
-desc "Populate CONTRIBUTORS file"
+desc 'Populate CONTRIBUTORS file'
 task :contributors do
   system("git log --format='%aN' | sort -u > CONTRIBUTORS")
 end
 
-desc "Run syntax, lint, and spec tests."
+desc 'Run syntax, lint, and spec tests.'
 task :test => [
   :metadata_lint,
   :syntax,
