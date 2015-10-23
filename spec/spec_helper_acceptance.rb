@@ -41,21 +41,6 @@ hosts.each do |host|
     on host, 'mkdir -p /var/log/puppetlabs/puppet' if host[:type] == 'aio'
   end
 
-  if ENV['ES_VERSION']
-
-    case fact('osfamily')
-      when 'RedHat'
-        ext = 'rpm'
-      when 'Debian'
-        ext = 'deb'
-      when  'Suse'
-        ext = 'rpm'
-    end
-
-    url = get_url
-    RSpec.configuration.test_settings['snapshot_package'] = url.gsub('$EXT$', ext)
-
-  end
 end
 
 RSpec.configure do |c|
