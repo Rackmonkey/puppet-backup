@@ -1,7 +1,6 @@
 require 'beaker-rspec'
 require 'pry'
 require 'securerandom'
-require_relative 'spec_acceptance_integration'
 
 def test_settings
   RSpec.configuration.test_settings
