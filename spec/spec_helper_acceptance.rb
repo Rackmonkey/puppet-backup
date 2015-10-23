@@ -85,5 +85,3 @@ RSpec.configure do |c|
     end
   end
 end
-
-require_relative 'spec_acceptance_common'
