@@ -101,9 +101,15 @@ define backup::account (
 
   unless $ensure == 'absent' {
     file{$home:
-      owner => 'root',
-      group => $group,
-      mode  => $mode,
+      ensure  => 'directory',
+      owner   => 'root',
+      group   => $group,
+      mode    => $mode,
+    } ->
+    file{"${home}/${title}":
+      ensure  => 'directory',
+      owner   => $title,
+      group   => $title,
     }
   }
   if $type != ['iscsi', 'nbd'] {
@@ -115,6 +121,7 @@ define backup::account (
         type    => $ssh_key_array[0],
         key     => $ssh_key_array[1],
         target  => "/customers/${title}/${title}/.ssh/authorized_keys",
+        require => File["${home}/${title}"],
       }
     }
   }
