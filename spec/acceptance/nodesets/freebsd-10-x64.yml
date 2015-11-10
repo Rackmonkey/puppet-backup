@@ -1,0 +1,8 @@
+HOSTS:
+  freebsd-10.2:
+    platform: freebsd-1002-x86_64
+    box: freebsd/FreeBSD-10.2-STABLE
+    hypervisor: vagrant
+    box_url: https://atlas.hashicorp.com/freebsd/boxes/FreeBSD-10.2-STABLE
+CONFIG:
+  type: foss

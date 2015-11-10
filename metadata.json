@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "author": "bastelfreak",
   "summary": "manages a FreeBSD Backup Server and his users",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "source": "https://github.com/bastelfreak/puppet-backup",
   "project_page": "https://github.com/bastelfreak/puppet-backup",
   "issues_url": "https://github.com/bastelfreak/puppet-backup/issues",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.9.0"}
   ]
 }
 
