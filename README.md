@@ -1,4 +1,6 @@
-# backup
+# Backup module for Puppet
+
+[![Build Status](https://travis-ci.org/rackmonkey/puppet-backup.png?branch=master)](https://travis-ci.org/rackmonkey/puppet-backup)
 
 #### Table of Contents
 
