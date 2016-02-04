@@ -40,7 +40,6 @@ hosts.each do |host|
 
     on host, 'mkdir -p /var/log/puppetlabs/puppet' if host[:type] == 'aio'
   end
-
 end
 
 RSpec.configure do |c|
@@ -62,9 +61,9 @@ RSpec.configure do |c|
 
   c.after :suite do
     if ENV['ES_VERSION']
-      hosts.each do |host|
+      hosts.each do |_host|
         timestamp = Time.now
-        log_dir = File.join('./spec/logs', timestamp.strftime("%F_%H_%M_%S"))
+        log_dir = File.join('./spec/logs', timestamp.strftime('%F_%H_%M_%S'))
         FileUtils.mkdir_p(log_dir) unless File.directory?(log_dir)
       end
     end
