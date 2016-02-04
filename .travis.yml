@@ -3,10 +3,6 @@ sudo: false
 language: ruby
 cache: bundler
 bundler_args: --without system_tests
-rvm:
-  - 2.1
-  - 2.2
-  - 2.3
 before_install: rm Gemfile.lock || true
 script:
   - 'bundle exec rake $CHECK'
