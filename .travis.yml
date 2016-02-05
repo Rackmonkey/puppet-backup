@@ -10,19 +10,19 @@ matrix:
   fast_finish: true
   include:
   - rvm: 1.9.3
-    env: PUPPET_VERSION="~> 3.0" STRICT_VARIABLES="yes" CHECK=test FUTURE_PARSER=yes
+    env: PUPPET_VERSION="~> 3.0" STRICT_VARIABLES="yes" CHECK=test FUTURE_PARSER=yes BUNDLE_PATH='.vendor'
   - rvm: 2.1.8
-    env: PUPPET_VERSION="~> 3.0" STRICT_VARIABLES="yes" CHECK=test FUTURE_PARSER=yes
+    env: PUPPET_VERSION="~> 3.0" STRICT_VARIABLES="yes" CHECK=test FUTURE_PARSER=yes BUNDLE_PATH='.vendor'
   - rvm: 2.1.8
-    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test
+    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test BUNDLE_PATH='.vendor'
   - rvm: 2.2.4
-    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test
+    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test BUNDLE_PATH='.vendor'
   - rvm: 2.2.4
-    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=rubocop
+    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=rubocop BUNDLE_PATH='.vendor'
   - rvm: 2.3.0
-    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test
+    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test BUNDLE_PATH='.vendor'
   - rvm: 2.3.0
-    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test
+    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test BUNDLE_PATH='.vendor'
 notifications:
   irc:
     on_success: change
