@@ -1,8 +1,10 @@
 HOSTS:
-  freebsd-10.2:
-    platform: freebsd-1002-x86_64
-    box: freebsd/FreeBSD-10.2-STABLE
-    hypervisor: vagrant
-    box_url: https://atlas.hashicorp.com/freebsd/boxes/FreeBSD-10.2-STABLE
+  freebsd-10-x64:
+    roles:
+      - master
+    platform: freebsd-10-x64
+    box : freebsd-10-x64-vbox
+    box_url : https://vagrantcloud.com/chef/boxes/freebsd-10.0/versions/1.0.0/providers/virtualbox.box
+    hypervisor : vagrant
 CONFIG:
-  type: foss
+  type: git
